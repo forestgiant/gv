@@ -48,11 +48,6 @@ func main() {
 	}
 
 	vendorPath := filepath.Join(path, "vendor")
-	err = os.Mkdir(vendorPath, 0700)
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	srcPath := filepath.Join(path, "src")
 	err = os.Rename(srcPath, vendorPath)
 	if err != nil {
