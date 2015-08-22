@@ -57,7 +57,7 @@ func main() {
 	go func() {
 		// Run the 'go get' command and rename src to vendor
 		if err = goGetCommand.Run(); err == nil {
-			if err = MergeVendors(srcPath, vendorPath); err == nil {
+			if err = mergeVendors(srcPath, vendorPath); err == nil {
 				success <- true
 				return
 			}
@@ -96,7 +96,7 @@ func main() {
 	}
 }
 
-func FileExists(path string) bool {
+func fileExists(path string) bool {
 	_, err := os.Stat(path)
 	if err != nil && os.IsNotExist(err) {
 		return false
@@ -104,7 +104,7 @@ func FileExists(path string) bool {
 	return true
 }
 
-func MergeVendors(src string, dst string) error {
+func mergeVendors(src string, dst string) error {
 	// Loop through all orgs in the src directory
 	domains, _ := ioutil.ReadDir(src)
 	for _, domain := range domains {
@@ -113,7 +113,7 @@ func MergeVendors(src string, dst string) error {
 			dstDomainPath := filepath.Join(dst, domain.Name())
 
 			// Ensure that the dst domain folder exists
-			if !FileExists(dstDomainPath) {
+			if !fileExists(dstDomainPath) {
 				if err := os.MkdirAll(dstDomainPath, 0700); err != nil {
 					return err
 				}
@@ -126,7 +126,7 @@ func MergeVendors(src string, dst string) error {
 				dstOrgPath := filepath.Join(dstDomainPath, org.Name())
 
 				// Ensure that the dst domain folder exists
-				if !FileExists(dstOrgPath) {
+				if !fileExists(dstOrgPath) {
 					if err := os.MkdirAll(dstOrgPath, 0700); err != nil {
 						return err
 					}
@@ -139,7 +139,7 @@ func MergeVendors(src string, dst string) error {
 					dstRepoPath := filepath.Join(dstOrgPath, repo.Name())
 
 					// Overwrite (Remove) any content that exists at dstRepoPath
-					if FileExists(dstRepoPath) {
+					if fileExists(dstRepoPath) {
 						if err := os.RemoveAll(dstRepoPath); err != nil {
 							return err
 						}
