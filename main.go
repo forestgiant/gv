@@ -11,7 +11,7 @@ const GO_PATH_ENV_NAME = "GOPATH"
 const GO_15_VENDOR_EXPERIMENT = "GO15VENDOREXPERIMENT"
 
 func main() {
-	if(os.Getenv(GO_15_VENDOR_EXPERIMENT) != "1") {
+	if os.Getenv(GO_15_VENDOR_EXPERIMENT) != "1" {
 		fmt.Println("The gv command expects the", GO_15_VENDOR_EXPERIMENT, "environment variable to be set to", 1)
 		os.Exit(0)
 	}
@@ -45,7 +45,7 @@ func main() {
 	goGetCommand.Stdin = os.Stdin
 	goGetCommand.Stdout = os.Stdout
 	goGetCommand.Stderr = os.Stderr
-	err =  goGetCommand.Run()
+	err = goGetCommand.Run()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(0)
@@ -59,17 +59,14 @@ func main() {
 		fmt.Println(err)
 	}
 
-	//Copy files into vendor directory
-	fmt.Println("Copying files from src to vendor")
-	copyCommand := exec.Command("mv", "src/", "vendor")
-	copyCommand := exec.Command("mv", "src/*", "vendor/")
-	copyCommand.Stdin = os.Stdin
-	copyCommand.Stdout = os.Stdout
-	copyCommand.Stderr = os.Stderr
-	copyCommand.Run()
+	srcPath := filepath.Join(path, "src")
+
+	err = os.Rename(srcPath, vendorPath)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	fmt.Println("Removing src folder (created by go get command)")
-	srcPath := filepath.Join(path, "src")
 	err = os.Remove(srcPath)
 	if err == nil {
 		fmt.Println(err)
