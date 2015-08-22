@@ -11,6 +11,8 @@ const GO_PATH_ENV_NAME = "GOPATH"
 const GO_15_VENDOR_EXPERIMENT = "GO15VENDOREXPERIMENT"
 
 func main() {
+	fmt.Println("Vendoring packages...")
+
 	if os.Getenv(GO_15_VENDOR_EXPERIMENT) != "1" {
 		fmt.Println("The gv command expects the", GO_15_VENDOR_EXPERIMENT, "environment variable to be set to", 1)
 		os.Exit(0)
@@ -25,7 +27,6 @@ func main() {
 			fmt.Println("The only command currently supported is 'get'.")
 			os.Exit(0)
 		}
-		fmt.Println(args)
 	}
 
 	//Get the PWD
@@ -34,13 +35,8 @@ func main() {
 		fmt.Println(err)
 		os.Exit(0)
 	}
-
-	//Set the GOPATH to PWD
-	fmt.Println("Temporarily overriding GOPATH to", path)
 	os.Setenv(GO_PATH_ENV_NAME, path)
 
-	//Issue 'go get' command
-	fmt.Println("Running go with commands=", args)
 	goGetCommand := exec.Command("go", args...)
 	goGetCommand.Stdin = os.Stdin
 	goGetCommand.Stdout = os.Stdout
@@ -51,8 +47,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	//Making vendor folder
-	fmt.Println("Making vendor folder")
 	vendorPath := filepath.Join(path, "vendor")
 	err = os.Mkdir(vendorPath, 0700)
 	if err != nil {
@@ -60,16 +54,16 @@ func main() {
 	}
 
 	srcPath := filepath.Join(path, "src")
-
 	err = os.Rename(srcPath, vendorPath)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println("Removing src folder (created by go get command)")
-	err = os.Remove(srcPath)
-	if err == nil {
+	pkgPath := filepath.Join(path, "pkg")
+	err = os.RemoveAll(pkgPath)
+	if err != nil {
 		fmt.Println(err)
-		os.Exit(0)
 	}
+
+	fmt.Println("Done.")
 }
