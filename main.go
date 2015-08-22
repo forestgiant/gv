@@ -61,6 +61,7 @@ func main() {
 
 	//Copy files into vendor directory
 	fmt.Println("Copying files from src to vendor")
+	copyCommand := exec.Command("mv", "src/", "vendor")
 	copyCommand := exec.Command("mv", "src/*", "vendor/")
 	copyCommand.Stdin = os.Stdin
 	copyCommand.Stdout = os.Stdout
