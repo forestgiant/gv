@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+# Wrapper for go get to add -v flag.
+# if -v (vendoring flag) is passed use gv tool instead
+# https://github.com/forestgiant/gv
+go_to_gv(){
+	local go_cmd="$GOCOMMANDLOCATION/go" # store location of original go command
+
+	# make sure go the file exists
+	if [ ! -f ${go_cmd} ]; then
+    	echo "'go' command not found! Check your GOCOMMANDLOCATION path."
+    	return
+	fi
+
+	local args=( $@ ) # get all args in an array
+
+	# we only care about the get arg
+	if [ ${args[0]} == "get" ]; then
+		# see if a -v version flag was passed
+		local i=0; for arg in "${args[@]}"; do
+			# If the version flag was passed use the gv tool
+			if [ $arg == "-v" ]; then	
+				unset args[i] 	# remove -v flag
+				gv $@ 			# use gv for vendoring and pass all arguments
+				return 			# exit the program
+			fi
+			i=$[ $i + 1 ] 		# increment i
+		done
+
+		# use go get like normal
+   		$go_cmd $@
+   		return
+	else
+		# get argument wasn't passed in so we execute go like normal
+		$go_cmd $@
+		return
+	fi
+}
+
+alias go=go_to_gv
