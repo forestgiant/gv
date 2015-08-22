@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -56,7 +57,7 @@ func main() {
 	go func() {
 		// Run the 'go get' command and rename src to vendor
 		if err = goGetCommand.Run(); err == nil {
-			if err = os.Rename(srcPath, vendorPath); err == nil {
+			if err = MergeVendors(srcPath, vendorPath); err == nil {
 				success <- true
 				return
 			}
@@ -93,4 +94,73 @@ func main() {
 		fmt.Println("Unable to vendor packages.")
 		os.Exit(1)
 	}
+}
+
+func FileExists(path string) bool {
+	_, err := os.Stat(path)
+	if err != nil && os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
+
+func MergeVendors(src string, dst string) error {
+	// Loop through all orgs in the src directory
+	domains, _ := ioutil.ReadDir(src)
+	for _, domain := range domains {
+		if domain.IsDir() {
+			srcDomainPath := filepath.Join(src, domain.Name())
+			dstDomainPath := filepath.Join(dst, domain.Name())
+
+			// Ensure that the dst domain folder exists
+			if !FileExists(dstDomainPath) {
+				if err := os.MkdirAll(dstDomainPath, 0700); err != nil {
+					return err
+				}
+			}
+
+			// Loop through the orgs for this domain
+			orgs, _ := ioutil.ReadDir(srcDomainPath)
+			for _, org := range orgs {
+				srcOrgPath := filepath.Join(srcDomainPath, org.Name())
+				dstOrgPath := filepath.Join(dstDomainPath, org.Name())
+
+				// Ensure that the dst domain folder exists
+				if !FileExists(dstOrgPath) {
+					if err := os.MkdirAll(dstOrgPath, 0700); err != nil {
+						return err
+					}
+				}
+
+				// Loop through the repos for this org
+				repos, _ := ioutil.ReadDir(srcOrgPath)
+				for _, repo := range repos {
+					srcRepoPath := filepath.Join(srcOrgPath, repo.Name())
+					dstRepoPath := filepath.Join(dstOrgPath, repo.Name())
+
+					// Overwrite (Remove) any content that exists at dstRepoPath
+					if FileExists(dstRepoPath) {
+						if err := os.RemoveAll(dstRepoPath); err != nil {
+							return err
+						}
+					}
+
+					// Copy each repo to corresponding dst directory
+					if err := os.Rename(srcRepoPath, dstRepoPath); err != nil {
+						return err
+					}
+
+					vendorPath := filepath.Join(domain.Name(), org.Name(), repo.Name())
+					fmt.Println("Vendored: ", vendorPath)
+				}
+			}
+		}
+	}
+
+	// Remove the src directory
+	if err := os.RemoveAll(src); err != nil {
+		return err
+	}
+
+	return nil
 }
