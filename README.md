@@ -7,5 +7,18 @@ A simple Go vendoring tool. `gv` uses `go get -d` to download packages and moves
 ## Usage
 `gv get [-f] [-fix] [-insecure] [-t] [-u] [packages]` 
 
+## go get wrapper
+We've added a bash script to wrap `go get` and add a `-v` flag. If you pass this flag to go get it will automatically use `gv` for vendoring
+
+Ex. `go get -v github.com/forestgiant/gv`
+
+To enable this you must edit your `.bash_profile` or `.bashrc` and add:
+
+```
+# gv: Used to wrap go get to add -v flag 
+export GOCOMMANDLOCATION=/usr/local/bin
+source $GOPATH/src/github.com/forestgiant/gv/go_to_gv
+```
+
 ## Versioning
 `gv` only vendors. For versioning checkout https://github.com/forestgiant/version a fork of [skelterjohn/vendor](https://github.com/skelterjohn/vendor)
