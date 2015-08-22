@@ -6,3 +6,6 @@ A simple Go vendoring tool. `gv` uses `go get -d` to download packages and moves
 
 ## Usage
 `gv get [-f] [-fix] [-insecure] [-t] [-u] [packages]` 
+
+## Versioning
+`gv` only vendors. For versioning checkout https://github.com/forestgiant/version a fork of [skelterjohn/vendor](https://github.com/skelterjohn/vendor)
