@@ -35,8 +35,11 @@ func main() {
 		fmt.Println(err)
 		os.Exit(0)
 	}
+
+	// Set GOPATH to the current working directory
 	os.Setenv(GO_PATH_ENV_NAME, path)
 
+	// Run go get
 	goGetCommand := exec.Command("go", args...)
 	goGetCommand.Stdin = os.Stdin
 	goGetCommand.Stdout = os.Stdout
@@ -47,6 +50,7 @@ func main() {
 		os.Exit(0)
 	}
 
+	// Create the vendor directory
 	vendorPath := filepath.Join(path, "vendor")
 	srcPath := filepath.Join(path, "src")
 	err = os.Rename(srcPath, vendorPath)
@@ -54,8 +58,15 @@ func main() {
 		fmt.Println(err)
 	}
 
+	// Clean up /pkg and /bin created by go get
 	pkgPath := filepath.Join(path, "pkg")
 	err = os.RemoveAll(pkgPath)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	binPath := filepath.Join(path, "bin")
+	err = os.RemoveAll(binPath)
 	if err != nil {
 		fmt.Println(err)
 	}
