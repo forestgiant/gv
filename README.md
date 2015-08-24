@@ -6,6 +6,7 @@ A simple Go vendoring tool. `gv` uses `go get -d` to download packages and moves
 
 ## Usage
 Must be used from project root directory.
+
 `gv get [-f] [-fix] [-insecure] [-t] [-u] [packages]` 
 
 ## go get wrapper
