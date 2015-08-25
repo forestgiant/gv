@@ -9,7 +9,7 @@ Must be used from project root directory.
 
 `gv get [-f] [-fix] [-insecure] [-t] [-u] [packages]` 
 
-## Go get wrapper - Bash Only
+## Go get wrapper - (Bash only)
 We've added a bash script to wrap `go get` and add a `-v` flag. If you pass this flag to go get it will automatically use `gv` for vendoring
 
 Ex. `go get -v github.com/forestgiant/gv`
