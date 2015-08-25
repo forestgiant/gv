@@ -1,6 +1,12 @@
 ## gv
 A simple Go vendoring tool. `gv` uses `go get -d` to download packages and moves them into a `vendor` folder for use with [Go 1.5 vendoring](https://docs.google.com/document/d/1Bz5-UB7g2uPBdOx-rw5t9MxJwkfpx90cqG9AFL0JAYo/edit). 
 
+## Requirements
+In order to use this tool, you must have Go 1.5 installed and enable vendoring in your `.bash_profile` or `.bashrc`:
+```
+export GO15VENDOREXPERIMENT=1
+```
+
 ## Installation
 `go get -u github.com/forestgiant/gv`
 
