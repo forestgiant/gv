@@ -19,20 +19,20 @@ go_to_gv(){
 		# see if a -v version flag was passed
 		local i=0; for arg in "${args[@]}"; do
 			# If the version flag was passed use the gv tool
-			if [ $arg == "-v" ]; then	
+			if [ $arg == "-v" ]; then
 				unset args[i] 	# remove -v flag
-				gv $@ 			# use gv for vendoring and pass all arguments
+				gv "$@" 			# use gv for vendoring and pass all arguments
 				return 			# exit the program
 			fi
 			i=$[ $i + 1 ] 		# increment i
 		done
 
 		# use go get like normal
-   		$go_cmd $@
+   		$go_cmd "$@"
    		return
 	else
 		# get argument wasn't passed in so we execute go like normal
-		$go_cmd $@
+		$go_cmd "$@"
 		return
 	fi
 }
