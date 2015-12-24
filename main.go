@@ -150,6 +150,24 @@ func mergeVendors(src string, dst string) error {
 						return err
 					}
 
+					// Remove version control from dstRepoPath
+					// Remove .git and .hg folders from dst directory
+					gitRepo := filepath.Join(dstRepoPath, ".git")
+					gitIgnore := filepath.Join(dstRepoPath, ".gitignore")
+					hgRepo := filepath.Join(dstRepoPath, ".hg")
+					if fileExists(gitRepo) {
+						err := os.RemoveAll(gitRepo)
+						if err != nil {
+							fmt.Println("gv:", err)
+						}
+						os.Remove(gitIgnore)
+					} else if fileExists(hgRepo) {
+						err := os.RemoveAll(hgRepo)
+						if err != nil {
+							fmt.Println("gv:", err)
+						}
+					}
+
 					vendorPath := filepath.Join(domain.Name(), org.Name(), repo.Name())
 					fmt.Println("Vendored: ", vendorPath)
 				}
